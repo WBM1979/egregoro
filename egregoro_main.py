@@ -41,3 +41,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+print("Egregoro - Versão de Teste v1.3.0")

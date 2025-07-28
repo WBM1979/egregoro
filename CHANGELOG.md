@@ -18,3 +18,9 @@ echo "# Histórico de Versões - Egregoro
 - Teste de nova versão
 - Nenhuma funcionalidade alterada, apenas versão salva
 
+
+## [v1.1.0] - 2025-07-26
+### Mudanças
+- Teste de nova versão
+- Nenhuma funcionalidade alterada, apenas versão salva
+
