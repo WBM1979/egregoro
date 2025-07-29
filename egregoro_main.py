@@ -119,3 +119,95 @@ if __name__ == "__main__":
 
         else:
             print("Opção inválida. Tente novamente.")
+import json
+import os
+import sys
+
+def ensinar_egregoro():
+    pergunta = input("Digite a pergunta: ")
+    resposta = input("Digite a resposta: ")
+
+    novo_aprendizado = {"pergunta": pergunta, "resposta": resposta}
+
+    if not os.path.exists("Aprendizados.json"):
+        with open("Aprendizados.json", "w") as f:
+            json.dump([], f)
+
+    with open("Aprendizados.json", "r") as f:
+        aprendizados = json.load(f)
+
+    aprendimentos_atuais = [a for a in aprendizados if a["pergunta"].lower() != pergunta.lower()]
+    aprendimentos_atuais.append(novo_aprendizado)
+
+    with open("Aprendizados.json", "w") as f:
+        json.dump(aprendimentos_atuais, f, indent=4)
+
+    print("✅ Aprendizado salvo com sucesso!\n")
+
+def executar_comando():
+    comando = input("Digite o comando a ser executado no terminal: ")
+    os.system(comando)
+
+def ver_aprendizados():
+    if not os.path.exists("Aprendizados.json"):
+        print("Nenhum aprendizado encontrado.\n")
+        return
+
+    with open("Aprendizados.json", "r") as f:
+        aprendizados = json.load(f)
+
+    if not aprendizados:
+        print("Nenhum aprendizado salvo.\n")
+    else:
+        print("\n📚 Aprendizados da Egregoro:\n")
+        for idx, item in enumerate(aprendizados, 1):
+            print(f"{idx}. Pergunta: {item['pergunta']}")
+            print(f"   Resposta: {item['resposta']}\n")
+
+def responder_egregoro(pergunta):
+    if not os.path.exists("Aprendizados.json"):
+        return "Ainda não aprendi nada..."
+
+    with open("Aprendizados.json", "r") as f:
+        aprendizados = json.load(f)
+
+    for item in aprendizados:
+        if item["pergunta"].lower() in pergunta.lower():
+            return item["resposta"]
+    return "Ainda não aprendi sobre isso."
+
+def conversar_com_egregoro():
+    print("\n🔹 Iniciando conversa com a Egregoro. Digite 'sair' para encerrar.\n")
+    while True:
+        entrada = input("Você: ")
+        if entrada.strip().lower() == "sair":
+            print("Encerrando conversa.\n")
+            break
+        resposta = responder_egregoro(entrada)
+        print("Egregoro:", resposta)
+
+# Exibição do menu principal
+print("Egregoro - Versão de Teste v1.3.0\n")
+
+while True:
+    print("Escolha uma opção:")
+    print("1. Ensinar algo à Egregoro")
+    print("2. Executar comando")
+    print("3. Ver aprendizados")
+    print("4. Conversar livremente com a Egregoro")
+    print("5. Sair")
+    opcao = input("Opção: ")
+
+    if opcao == "1":
+        ensinar_egregoro()
+    elif opcao == "2":
+        executar_comando()
+    elif opcao == "3":
+        ver_aprendizados()
+    elif opcao == "4":
+        conversar_com_egregoro()
+    elif opcao == "5":
+        print("Encerrando a Egregoro.")
+        break
+    else:
+        print("Opção inválida. Tente novamente.\n")
