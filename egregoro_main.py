@@ -7,6 +7,15 @@ from egos.conversar.conversar import conversar
 from fastapi import FastAP
 app = FastAPI()
 
+from dotenv import load_dotenv
+import os
+
+# Carregar as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# Definir a variável ARQUIVO_APRENDIZADO usando a variável de ambiente
+ARQUIVO_APRENDIZADO = os.getenv('ARQUIVO_APRENDIZADO', 'Aprendizados.json')
+
 @app.get("/")
 def raiz():
     return {"mensagem": "Egregoro online e ativa."}

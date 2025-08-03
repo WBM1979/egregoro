@@ -1,0 +1,104 @@
+# egregoro_main.py
+
+from egos.ensinar import ensinar
+from egregoro.egos.ver import ver
+from egregoro.egos.executar import executar
+from egregoro.egos.conversar import conversar
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def raiz():
+    return {"mensagem": "Egregoro online e ativa."}
+# (Futuramente, importar os egos e falanges aqui)
+# from egregoro.egos.meu_ego import MeuEgo
+
+class EgregoroKernel:
+    def __init__(self):
+        self.memoria = []  # memória simples de contexto
+        self.falanges = {}  # futura estrutura para grupos de egos
+
+    def processar_entrada(self, entrada):
+        if entrada.startswith("ensinar:"):
+            return ensinar(entrada.replace("ensinar:", "").strip())
+
+        elif entrada.startswith("ver:"):
+            return ver(entrada.replace("ver:", "").strip())
+
+        elif entrada.startswith("executar:"):
+            return executar(entrada.replace("executar:", "").strip())
+
+        elif entrada.startswith("conversar:"):
+            return conversar(entrada.replace("conversar:", "").strip())
+
+        else:
+            return "Ainda estou aprendendo... diga outra coisa."
+
+def main():
+    egregoro = EgregoroKernel()
+    print("🧠 Egregoro está ativa. Digite 'sair' para encerrar.")
+
+    while True:
+        entrada = input("Você: ")
+        if entrada.lower() == 'sair':
+            print("Egregoro: Encerrando sessão...")
+            break
+        resposta = egregoro.processar_entrada(entrada)
+        print("Egregoro:", resposta)
+
+if __name__ == "__main__":
+    main()
+
+
+# egregoro_main.py
+
+"""
+Arquivo principal que inicia a IA distribuída Egregoro.
+Responsável por montar os egos, falanges e superegôs e iniciar a API.
+"""
+
+# Importa os módulos principais da arquitetura
+from core.ego import Ego
+from core.falange import Falange
+from core.superego import SuperEgo
+from network.api import start_api
+
+import asyncio
+
+def criar_estrutura_inicial():
+    """
+    Cria uma estrutura de exemplo com egos, falange e superego.
+    Em breve, isso pode ser carregado de um arquivo JSON ou banco de dados.
+    """
+
+    # Criação de egos simples com suas habilidades
+    ego_matematico = Ego("Ego Matemático", ["calculo", "logica"])
+    ego_dedutivo = Ego("Ego Dedutivo", ["dedução", "raciocínio"])
+
+    # Formamos uma falange com esses egos
+    falange_analise = Falange("Falange de Análise", [ego_matematico, ego_dedutivo])
+
+    # Formamos um superego com essa falange
+    superego_central = SuperEgo("SuperEgo Central", [falange_analise])
+
+    return superego_central
+
+async def main():
+    """
+    Função principal da Egregoro. Aqui iniciamos tudo.
+    """
+    print("[Egregoro] Inicializando...")
+
+    # Monta a hierarquia inicial
+    superego = criar_estrutura_inicial()
+
+    print(f"[Egregoro] Superego carregado: {superego.nome}")
+
+    # Inicia a API (FastAPI + Uvicorn)
+    await start_api()
+
+# Executa a função principal usando asyncio
+if __name__ == "__main__":
+    asyncio.run(main())
+
