@@ -202,3 +202,70 @@ def menu():
 if __name__ == "__main__":
     atualizar_repositorio()
     menu()
+import os
+import json
+import subprocess
+from egregoro.egos.ensinar import ensinar
+from egregoro.egos.executar import executar
+from egregoro.egos.ver import ver
+from egregoro.egos.conversar import conversar
+
+# Nome do arquivo que contém os aprendizados
+ARQUIVO_APRENDIZADO = "Aprendizados.json"
+
+# Função para verificar e atualizar o repositório Git
+def atualizar_repositorio():
+    print("🔄 Verificando atualizações no repositório Git...")
+    try:
+        # Comando git pull para atualizar o repositório
+        resultado = subprocess.run(["git", "pull"], cwd=os.path.dirname(__file__), capture_output=True, text=True)
+        print(resultado.stdout)
+        if "Already up to date." not in resultado.stdout:
+            print("✅ Repositório atualizado com sucesso.")
+        else:
+            print("🟢 Já está na versão mais recente.")
+    except Exception as e:
+        print("⚠️ Erro ao atualizar o repositório:", str(e))
+
+# Função para carregar os aprendizados do arquivo JSON
+def carregar_aprendizados():
+    if os.path.exists(ARQUIVO_APRENDIZADO):
+        with open(ARQUIVO_APRENDIZADO, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Função para salvar os aprendizados no arquivo JSON
+def salvar_aprendizados(aprendizados):
+    with open(ARQUIVO_APRENDIZADO, 'w') as f:
+        json.dump(aprendizados, f, indent=4)
+
+# Função que exibe o menu principal e chama as respectivas funções de acordo com a escolha do usuário
+def menu():
+    while True:
+        print("\n===== 🌐 Egregoro IA =====")
+        print("1. Ensinar comando")
+        print("2. Executar comando")
+        print("3. Ver aprendizados")
+        print("4. Conversar livremente")
+        print("5. Sair")
+
+        escolha = input("Escolha uma opção: ").strip()
+
+        if escolha == "1":
+            ensinar()
+        elif escolha == "2":
+            executar()
+        elif escolha == "3":
+            ver()
+        elif escolha == "4":
+            conversar()
+        elif escolha == "5":
+            print("🛑 Encerrando Egregoro...")
+            break
+        else:
+            print("❗ Opção inválida. Tente novamente.")
+
+# Função principal que chama as outras funções
+if __name__ == "__main__":
+    atualizar_repositorio()  # Verifica e atualiza o repositório
+    menu()  # Chama o menu de opções
