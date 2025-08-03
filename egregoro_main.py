@@ -1,11 +1,10 @@
 # egregoro_main.py
 
-from egos.ensinar import ensinar
-from egregoro.egos.ver import ver
-from egregoro.egos.executar import executar
-from egregoro.egos.conversar import conversar
-from fastapi import FastAPI
-
+from egos.ensinar.ensinar import ensinar
+from egos.executar.executar import executar
+from egos.ver.ver import ver
+from egos.conversar.conversar import conversar
+from fastapi import FastAP
 app = FastAPI()
 
 @app.get("/")
