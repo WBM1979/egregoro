@@ -437,3 +437,130 @@ def menu():
 if __name__ == "__main__":
     atualizar_repositorio()  # Atualiza o repositório antes de iniciar
     menu()  # Inicia o menu do sistema
+import os
+import json
+import subprocess
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# Caminho para o arquivo de aprendizados
+ARQUIVO_APRENDIZADO = os.getenv('ARQUIVO_APRENDIZADO', 'Aprendizados.json')
+
+# Adicionar o diretório atual ao sys.path para garantir que o Python encontre os pacotes locais
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+# Importação do módulo executar de egos
+from egos.executar import executar
+
+def atualizar_repositorio():
+    print("🔄 Verificando atualizações no repositório Git...")
+    try:
+        resultado = subprocess.run(["git", "pull"], cwd=os.path.dirname(__file__), capture_output=True, text=True)
+        print(resultado.stdout)
+        if "Already up to date." not in resultado.stdout:
+            print("✅ Repositório atualizado com sucesso.")
+        else:
+            print("🟢 Já está na versão mais recente.")
+    except Exception as e:
+        print("⚠️ Erro ao atualizar o repositório:", str(e))
+
+def carregar_aprendizados():
+    """
+    Função para carregar os aprendizados de um arquivo JSON.
+    Retorna um dicionário de aprendizados ou um dicionário vazio se o arquivo não existir.
+    """
+    if os.path.exists(ARQUIVO_APRENDIZADO):
+        with open(ARQUIVO_APRENDIZADO, 'r') as f:
+            return json.load(f)
+    return {}
+
+def salvar_aprendizados(aprendizados):
+    """
+    Função para salvar os aprendizados em um arquivo JSON.
+    """
+    with open(ARQUIVO_APRENDIZADO, 'w') as f:
+        json.dump(aprendizados, f, indent=4)
+
+def ensinar():
+    """
+    Função para ensinar um novo comando e sua resposta.
+    """
+    aprendizados = carregar_aprendizados()
+    chave = input("🧠 Digite o comando que você quer ensinar: ").strip()
+    resposta = input("🗣️ E qual é a resposta que devo dar?: ").strip()
+    aprendizados[chave.lower()] = resposta
+    salvar_aprendizados(aprendizados)
+    print("✅ Comando aprendido com sucesso!")
+
+def executar_comando():
+    """
+    Função para executar um comando baseado nos aprendizados.
+    """
+    aprendizados = carregar_aprendizados()
+    comando = input("🔎 O que deseja executar?: ").strip().lower()
+    if comando in aprendizados:
+        print("🤖", aprendizados[comando])
+    else:
+        print("❌ Eu ainda não aprendi isso.")
+
+def ver_aprendizados():
+    """
+    Função para ver todos os aprendizados salvos.
+    """
+    aprendizados = carregar_aprendizados()
+    if aprendizados:
+        print("📚 Comandos aprendidos:")
+        for chave, valor in aprendizados.items():
+            print(f"• {chave} => {valor}")
+    else:
+        print("😕 Ainda não aprendi nada.")
+
+def conversar():
+    """
+    Função para conversar com o sistema.
+    O sistema responde com base nos comandos aprendidos.
+    """
+    aprendizados = carregar_aprendizados()
+    print("💬 Vamos conversar! (digite 'sair' para encerrar a conversa)\n")
+    while True:
+        entrada = input("👤 Você: ").strip().lower()
+        if entrada == "sair":
+            print("👋 Até logo!")
+            break
+        resposta = aprendizados.get(entrada, "🤖 Ainda não aprendi isso.")
+        print("🤖 Egregoro:", resposta)
+
+def menu():
+    """
+    Função para exibir o menu de opções para o usuário.
+    """
+    while True:
+        print("\n===== 🌐 Egregoro IA =====")
+        print("1. Ensinar comando")
+        print("2. Executar comando")
+        print("3. Ver aprendizados")
+        print("4. Conversar livremente")
+        print("5. Sair")
+
+        escolha = input("Escolha uma opção: ").strip()
+
+        if escolha == "1":
+            ensinar()
+        elif escolha == "2":
+            executar_comando()
+        elif escolha == "3":
+            ver_aprendizados()
+        elif escolha == "4":
+            conversar()
+        elif escolha == "5":
+            print("🛑 Encerrando Egregoro...")
+            break
+        else:
+            print("❗ Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    atualizar_repositorio()
+    menu()
