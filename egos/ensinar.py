@@ -1,3 +1,7 @@
+
+
+def ensinar():
+    print("Função ensinar executada")
 def executar():
     dado = input("📚 O que deseja ensinar à Egregoro? ")
     if dado.strip():
