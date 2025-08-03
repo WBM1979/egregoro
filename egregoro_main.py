@@ -277,3 +277,163 @@ def menu():
 if __name__ == "__main__":
     atualizar_repositorio()  # Verifica e atualiza o repositório
     menu()  # Chama o menu de opções
+# Importação das bibliotecas necessárias
+import os
+import json
+import subprocess
+from dotenv import load_dotenv
+from egos.executar import executar  # Correção no caminho de importação
+
+# Carregamento das variáveis de ambiente a partir do arquivo .env
+load_dotenv()
+
+# Variável de ambiente ARQUIVO_APRENDIZADO que recebe o caminho do arquivo de aprendizados
+ARQUIVO_APRENDIZADO = os.getenv('ARQUIVO_APRENDIZADO', 'Aprendizados.json')
+
+# Função para atualizar o repositório Git
+def atualizar_repositorio():
+    """
+    Esta função realiza a atualização do repositório Git, puxando as últimas modificações.
+    """
+    print("🔄 Verificando atualizações no repositório Git...")
+    try:
+        # Executa o comando 'git pull' para atualizar o repositório
+        resultado = subprocess.run(["git", "pull"], cwd=os.path.dirname(__file__), capture_output=True, text=True)
+        print(resultado.stdout)
+        
+        # Verifica se o repositório foi atualizado ou se já está na versão mais recente
+        if "Already up to date." not in resultado.stdout:
+            print("✅ Repositório atualizado com sucesso.")
+        else:
+            print("🟢 Já está na versão mais recente.")
+    except Exception as e:
+        # Caso ocorra algum erro, imprime a mensagem
+        print("⚠️ Erro ao atualizar o repositório:", str(e))
+
+# Função para carregar os aprendizados de um arquivo JSON
+def carregar_aprendizados():
+    """
+    Carrega os aprendizados salvos no arquivo ARQUIVO_APRENDIZADO.
+    Se o arquivo não existir, retorna um dicionário vazio.
+    """
+    if os.path.exists(ARQUIVO_APRENDIZADO):
+        with open(ARQUIVO_APRENDIZADO, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Função para salvar os aprendizados no arquivo ARQUIVO_APRENDIZADO
+def salvar_aprendizados(aprendizados):
+    """
+    Salva o dicionário de aprendizados no arquivo JSON especificado.
+    """
+    with open(ARQUIVO_APRENDIZADO, 'w') as f:
+        json.dump(aprendizados, f, indent=4)
+
+# Função para ensinar um novo comando
+def ensinar():
+    """
+    Solicita ao usuário um novo comando e a resposta associada,
+    e salva isso no arquivo de aprendizados.
+    """
+    aprendizados = carregar_aprendizados()
+    
+    # Solicita o comando e a resposta ao usuário
+    chave = input("🧠 Digite o comando que você quer ensinar: ").strip()
+    resposta = input("🗣️ E qual é a resposta que devo dar?: ").strip()
+    
+    # Adiciona o comando ao dicionário de aprendizados
+    aprendizados[chave.lower()] = resposta
+    
+    # Salva o dicionário de aprendizados atualizado
+    salvar_aprendizados(aprendizados)
+    
+    # Informa que o comando foi aprendido com sucesso
+    print("✅ Comando aprendido com sucesso!")
+
+# Função para executar um comando aprendido
+def executar():
+    """
+    Executa um comando aprendido, mostrando a resposta associada.
+    Se o comando não foi aprendido, informa que ainda não foi registrado.
+    """
+    aprendizados = carregar_aprendizados()
+    
+    # Solicita ao usuário o comando que deseja executar
+    comando = input("🔎 O que deseja executar?: ").strip().lower()
+    
+    # Verifica se o comando está registrado nos aprendizados
+    if comando in aprendizados:
+        print("🤖", aprendizados[comando])
+    else:
+        print("❌ Eu ainda não aprendi isso.")
+
+# Função para exibir todos os aprendizados
+def ver_aprendizados():
+    """
+    Exibe todos os comandos e suas respostas armazenadas no arquivo de aprendizados.
+    """
+    aprendizados = carregar_aprendizados()
+    
+    if aprendizados:
+        print("📚 Comandos aprendidos:")
+        # Exibe cada comando e a resposta associada
+        for chave, valor in aprendizados.items():
+            print(f"• {chave} => {valor}")
+    else:
+        print("😕 Ainda não aprendi nada.")
+
+# Função para conversar com o sistema
+def conversar():
+    """
+    Permite uma conversa livre com o sistema. O usuário pode digitar comandos que
+    foram ensinados ou digitar 'sair' para encerrar a conversa.
+    """
+    aprendizados = carregar_aprendizados()
+    print("💬 Vamos conversar! (digite 'sair' para encerrar a conversa)\n")
+    
+    while True:
+        entrada = input("👤 Você: ").strip().lower()
+        
+        # Encerra a conversa se o usuário digitar 'sair'
+        if entrada == "sair":
+            print("👋 Até logo!")
+            break
+        
+        # Verifica se a entrada do usuário está registrada
+        resposta = aprendizados.get(entrada, "🤖 Ainda não aprendi isso.")
+        print("🤖 Egregoro:", resposta)
+
+# Função principal do programa, que exibe o menu e executa as opções do usuário
+def menu():
+    """
+    Exibe o menu principal com as opções disponíveis e executa a ação escolhida pelo usuário.
+    """
+    while True:
+        print("\n===== 🌐 Egregoro IA =====")
+        print("1. Ensinar comando")
+        print("2. Executar comando")
+        print("3. Ver aprendizados")
+        print("4. Conversar livremente")
+        print("5. Sair")
+
+        # Solicita a escolha do usuário
+        escolha = input("Escolha uma opção: ").strip()
+
+        if escolha == "1":
+            ensinar()
+        elif escolha == "2":
+            executar()
+        elif escolha == "3":
+            ver_aprendizados()
+        elif escolha == "4":
+            conversar()
+        elif escolha == "5":
+            print("🛑 Encerrando Egregoro...")
+            break
+        else:
+            print("❗ Opção inválida. Tente novamente.")
+
+# Execução do programa
+if __name__ == "__main__":
+    atualizar_repositorio()  # Atualiza o repositório antes de iniciar
+    menu()  # Inicia o menu do sistema
