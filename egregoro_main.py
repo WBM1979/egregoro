@@ -1,10 +1,57 @@
-# egregoro_main.py
+import os
+from dotenv import load_dotenv  # Carrega variáveis do arquivo .env
+from fastapi import FastAPI
+import uvicorn
 
+# Importa a função que executa os egos
+from egos.executar import executar
+
+# Carrega as variáveis do .env
+load_dotenv()
+
+# Inicializa o app FastAPI
+app = FastAPI()
+
+# Lê configurações do .env
+PORT = int(os.getenv("PORT", 5050))
+HOST = os.getenv("HOST", "0.0.0.0")
+EGREGORO_NOME = os.getenv("EGREGORO_NOME", "Egregoro")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
+# Endpoint de status
+@app.get("/")
+def status():
+    return {"status": f"{EGREGORO_NOME} está ativa e funcionando."}
+
+# Endpoint de execução de uma tarefa via API
+@app.post("/executar")
+def executar_tarefa(prompt: str):
+    resposta = executar(prompt)
+    return {"resposta": resposta}
+
+# Modo interativo via terminal
+def modo_interativo():
+    print(f"🧠 {EGREGORO_NOME} está ativa. Digite 'sair' para encerrar.")
+    while True:
+        entrada = input("Você: ")
+        if entrada.lower() in ["sair", "exit", "quit"]:
+            print(f"{EGREGORO_NOME}: Até mais!")
+            break
+        resposta = executar(entrada)
+        print(f"{EGREGORO_NOME}: {resposta}")
+
+# Ponto de entrada principal
+if __name__ == "__main__":
+    # Se quiser rodar no terminal direto
+    try:
+        modo_interativo()
+    except KeyboardInterrupt:
+        print("\nEncerrando o sistema.")
 from egos.ensinar.ensinar import ensinar
 from egos.executar.executar import executar
 from egos.ver.ver import ver
 from egos.conversar.conversar import conversar
-from fastapi import FastAP
+from fastapi import FastAPI
 app = FastAPI()
 
 from dotenv import load_dotenv
@@ -18,7 +65,7 @@ ARQUIVO_APRENDIZADO = os.getenv('ARQUIVO_APRENDIZADO', 'Aprendizados.json')
 
 @app.get("/")
 def raiz():
-    return {"mensagem": "Egregoro online e ativa."}
+   return {"mensagem": "Egregoro online e ativa."}
 # (Futuramente, importar os egos e falanges aqui)
 # from egregoro.egos.meu_ego import MeuEgo
 
